@@ -1,4 +1,4 @@
-import 'package:dioapp/ui/pages/calculator/calculator_imc.dart';
+import 'package:dioapp/ui/home.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,7 +16,7 @@ class DioApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       debugShowCheckedModeBanner: false,
-      home: const CalculatorIMC(),
+      home: const Home(),
     );
   }
 }

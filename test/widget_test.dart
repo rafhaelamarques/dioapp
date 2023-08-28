@@ -17,4 +17,8 @@ void main() {
       "Testa quando o peso e/ou altura são 0",
       () => expect(Person(name: 'Maria', weight: 0, height: 0).imc(),
           throwsA(isA<ArgumentError>())));
+  test(
+      "Testa quando o peso e/ou altura são negativos",
+      () => expect(Person(name: 'Maria', weight: -60, height: -1.60).imc(),
+          throwsA(isA<ArgumentError>())));
 }

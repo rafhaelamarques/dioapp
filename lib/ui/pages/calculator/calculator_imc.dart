@@ -14,13 +14,16 @@ class _CalculatorIMCState extends State<CalculatorIMC> {
   final Person _person = Person.empty();
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _heightController = TextEditingController();
-  bool _hasResult = false;
+  double _imcResult = 0.0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Calculadora IMC'),
-      ),
+          title: const Text('Calculadora IMC'),
+          leading: IconButton(
+            icon: const Icon(Icons.chevron_left),
+            onPressed: () => Navigator.pop(context),
+          )),
       body: Form(
         key: _validationKey,
         child: ListView(
@@ -95,31 +98,57 @@ class _CalculatorIMCState extends State<CalculatorIMC> {
               ],
             ),
             const SizedBox(height: 40),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_validationKey.currentState!.validate()) {
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    if (_validationKey.currentState!.validate()) {
+                      setState(() {
+                        _person.weight = double.parse(_weightController.text);
+                        _person.height = double.parse(_heightController.text);
+                      });
+                      if (_person.imc() is double) {
+                        setState(() {
+                          _imcResult = _person.imc();
+                        });
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(_person.imc()),
+                            duration: const Duration(seconds: 3),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                      return;
+                    }
                     setState(() {
-                      _person.weight = double.parse(_weightController.text);
-                      _person.height = double.parse(_heightController.text);
-                      _hasResult = true;
+                      _imcResult = 0.0;
                     });
-                    return;
-                  }
-                  setState(() {
-                    _hasResult = false;
-                  });
-                },
-                child: const Text('Calcular'),
-              ),
+                  },
+                  child: const Text('Calcular'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _weightController.clear();
+                      _heightController.clear();
+                      _imcResult = 0.0;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  child: const Text('Limpar'),
+                ),
+              ],
             ),
             const SizedBox(height: 40),
             Visibility(
-              visible: _hasResult,
+              visible: _imcResult != 0.0,
               child: Column(
                 children: [
                   Text(
-                    'IMC: ${_person.imc()}',
+                    'IMC: $_imcResult',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
