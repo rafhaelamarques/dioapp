@@ -112,20 +112,16 @@ class _CalculatorIMCState extends State<CalculatorIMC> {
                         setState(() {
                           _imcResult = _person.imc();
                         });
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(_person.imc()),
-                            duration: const Duration(seconds: 3),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
+                        return;
                       }
-                      return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(_person.imc()),
+                          duration: const Duration(seconds: 3),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
                     }
-                    setState(() {
-                      _imcResult = 0.0;
-                    });
                   },
                   child: const Text('Calcular'),
                 ),
