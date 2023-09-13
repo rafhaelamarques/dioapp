@@ -1,4 +1,4 @@
-import 'package:dioapp/ui/pages/calculator/calculator_imc.dart';
+import 'package:dioapp/ui/pages/calculator/calculator_imc_page.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -31,7 +31,7 @@ class Home extends StatelessWidget {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const CalculatorIMC()));
+                      builder: (context) => const CalculatorImcPage()));
             },
           ),
         ],

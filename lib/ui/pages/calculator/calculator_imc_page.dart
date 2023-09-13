@@ -1,20 +1,34 @@
 import 'package:dioapp/data/model/person.dart';
+import 'package:dioapp/data/repositories/person_repository.dart';
 import 'package:dioapp/ui/pages/calculator/components/table_imc.dart';
 import 'package:flutter/material.dart';
 
-class CalculatorIMC extends StatefulWidget {
-  const CalculatorIMC({super.key});
+class CalculatorImcPage extends StatefulWidget {
+  const CalculatorImcPage({super.key});
 
   @override
-  State<CalculatorIMC> createState() => _CalculatorIMCState();
+  State<CalculatorImcPage> createState() => _CalculatorImcPageState();
 }
 
-class _CalculatorIMCState extends State<CalculatorIMC> {
+class _CalculatorImcPageState extends State<CalculatorImcPage> {
   final _validationKey = GlobalKey<FormState>();
   final Person _person = Person.empty();
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _heightController = TextEditingController();
   double _imcResult = 0.0;
+
+  late PersonRepository _personRepository;
+
+  void loadData() async {
+    _personRepository = await PersonRepository.getInstance();
+  }
+
+  @override
+  void initState() {
+    loadData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,6 +126,7 @@ class _CalculatorIMCState extends State<CalculatorIMC> {
                         setState(() {
                           _imcResult = _person.imc();
                         });
+                        _personRepository.saveImc(_imcResult);
                         return;
                       }
                       ScaffoldMessenger.of(context).showSnackBar(

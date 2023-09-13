@@ -1,7 +1,12 @@
 import 'package:dioapp/ui/home.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart' as path;
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final directory = await path.getApplicationDocumentsDirectory();
+  Hive.init(directory.path);
   runApp(const DioApp());
 }
 
