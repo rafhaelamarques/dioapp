@@ -1,3 +1,4 @@
+import 'package:dioapp/data/model/imc.dart';
 import 'package:hive/hive.dart';
 
 class PersonRepository {
@@ -18,11 +19,17 @@ class PersonRepository {
     return PersonRepository._load();
   }
 
-  void saveImc(double imc) {
-    _box.put('imc', imc);
+  void saveImc(Imc imc) {
+    List<Imc> imcList = getImc();
+    imcList.add(imc);
+    _box.put('imc', imcList);
   }
 
-  List<dynamic> getImc() {
-    return _box.keys.map((key) => _box.get(key)).toList();
+  List<Imc> getImc() {
+    return _box.get('imc', defaultValue: <Imc>[]).cast<Imc>();
+  }
+
+  void clearImc() {
+    _box.delete('imc');
   }
 }

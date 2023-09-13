@@ -1,7 +1,10 @@
+import 'package:dioapp/data/model/imc.dart';
 import 'package:dioapp/data/model/person.dart';
 import 'package:dioapp/data/repositories/person_repository.dart';
 import 'package:dioapp/ui/pages/calculator/components/table_imc.dart';
+import 'package:dioapp/ui/pages/calculator/imc_timeline_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CalculatorImcPage extends StatefulWidget {
   const CalculatorImcPage({super.key});
@@ -18,9 +21,15 @@ class _CalculatorImcPageState extends State<CalculatorImcPage> {
   double _imcResult = 0.0;
 
   late PersonRepository _personRepository;
+  bool _isLoading = false;
 
   void loadData() async {
     _personRepository = await PersonRepository.getInstance();
+    setState(() {
+      _personRepository.getImc().isNotEmpty
+          ? _isLoading = true
+          : _isLoading = false;
+    });
   }
 
   @override
@@ -33,17 +42,13 @@ class _CalculatorImcPageState extends State<CalculatorImcPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Calculadora IMC'),
-          leading: IconButton(
-            icon: const Icon(Icons.chevron_left),
-            onPressed: () => Navigator.pop(context),
-          )),
+        title: const Text('Calculadora IMC'),
+      ),
       body: Form(
         key: _validationKey,
         child: ListView(
           padding: const EdgeInsets.all(8.0),
           children: [
-            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -59,7 +64,10 @@ class _CalculatorImcPageState extends State<CalculatorImcPage> {
                   child: TextFormField(
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
-                    maxLength: 3,
+                    maxLength: 4,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*')),
+                    ],
                     style: const TextStyle(fontSize: 14),
                     decoration: const InputDecoration(
                       hintText: '60',
@@ -95,6 +103,9 @@ class _CalculatorImcPageState extends State<CalculatorImcPage> {
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
                     maxLength: 4,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*')),
+                    ],
                     style: const TextStyle(fontSize: 14),
                     decoration: const InputDecoration(
                       hintText: '1.65',
@@ -111,7 +122,7 @@ class _CalculatorImcPageState extends State<CalculatorImcPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -119,14 +130,22 @@ class _CalculatorImcPageState extends State<CalculatorImcPage> {
                   onPressed: () {
                     if (_validationKey.currentState!.validate()) {
                       setState(() {
-                        _person.weight = double.parse(_weightController.text);
-                        _person.height = double.parse(_heightController.text);
+                        _person.weight =
+                            double.parse(_weightController.text.trim());
+                        _person.height =
+                            double.parse(_heightController.text.trim());
                       });
                       if (_person.imc() is double) {
                         setState(() {
                           _imcResult = _person.imc();
+                          _isLoading = true;
                         });
-                        _personRepository.saveImc(_imcResult);
+                        _personRepository.saveImc(
+                          Imc(
+                            total: _imcResult,
+                            date: DateTime.now(),
+                          ),
+                        );
                         return;
                       }
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -153,7 +172,7 @@ class _CalculatorImcPageState extends State<CalculatorImcPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
             Visibility(
               visible: _imcResult != 0.0,
               child: Column(
@@ -167,9 +186,42 @@ class _CalculatorImcPageState extends State<CalculatorImcPage> {
                   ),
                   const SizedBox(height: 20),
                   const TableIMC(),
+                  const SizedBox(height: 20),
                 ],
               ),
-            )
+            ),
+            Visibility(
+              visible: _isLoading,
+              child: SizedBox(
+                width: 100,
+                height: 50,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ImcTimeLinePage(
+                          personRepository: _personRepository,
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Wrap(
+                    spacing: 4,
+                    children: [
+                      Text(
+                        'Histórico',
+                        style: TextStyle(
+                          color: Colors.blue,
+                        ),
+                      ),
+                      Icon(Icons.arrow_forward_ios,
+                          size: 16, color: Colors.blue)
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
