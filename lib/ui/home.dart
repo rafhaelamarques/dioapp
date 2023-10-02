@@ -1,4 +1,5 @@
 import 'package:dioapp/ui/pages/calculator/calculator_imc_page.dart';
+import 'package:dioapp/ui/pages/cep/cep_search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -32,6 +33,16 @@ class Home extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) => const CalculatorImcPage()));
+            },
+          ),
+          ListTile(
+            title: const Text('Pesquisa de CEP'),
+            trailing: Icon(MdiIcons.homeSearchOutline),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const CepSearchPage()));
             },
           ),
         ],

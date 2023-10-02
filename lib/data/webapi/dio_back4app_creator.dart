@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:dioapp/data/webapi/dio_back4app_interceptor.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class DioBack4AppCreator {
@@ -8,10 +9,7 @@ class DioBack4AppCreator {
 
   DioBack4AppCreator() {
     _dio.options.baseUrl = dotenv.get('BACK4APP_BASE_URL');
-    _dio.options.headers['X-Parse-Application-Id'] =
-        dotenv.get('BACK4APP_APPLICATION_ID');
-    _dio.options.headers['X-Parse-REST-API-Key'] =
-        dotenv.get('BACK4APP_CLIENT_KEY');
     _dio.options.headers['Content-Type'] = 'application/json';
+    _dio.interceptors.add(DioBack4AppInterceptor());
   }
 }
